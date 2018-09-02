@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+
+	<ui:define name="conteudo">
+
+
+		<h:form id="formListagem">
+			<p:panel header="Ponto_linhas - Listagem">
+
+				<p:dataTable emptyMessage="Nenhum registro encontrado."
+					paginator="true" value="#{ponto_LinhaBean.ponto_Linhas}"
+					var="ponto_linhaCursor" rows="5" id="tabela">
+
+					<f:facet name="header">
+
+						<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+							actionListener="#{ponto_LinhaBean.novo}"
+							update=":mensagem :formCadastro:painel" icon="ui-icon-plus">
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+
+
+					</f:facet>
+
+					<p:column headerText="Tempo"
+						sortBy="#{ponto_linhaCursor.ponLi_tempo}"
+						filterBy="#{ponto_linhaCursor.ponLi_tempo}">
+						<h:outputText value="#{ponto_linhaCursor.ponLi_tempo}" />
+					</p:column>
+
+					<p:column headerText="Linha"
+						sortBy="#{ponto_linhaCursor.linha.lin_nome}"
+						filterBy="#{ponto_linhaCursor.linha.lin_nome}">
+						<h:outputText value="#{ponto_linhaCursor.linha.lin_nome}" />
+					</p:column>
+
+					<p:column headerText="Ponto"
+						sortBy="#{ponto_linhaCursor.ponto.pon_numero}"
+						filterBy="#{ponto_linhaCursor.ponto.pon_numero}">
+						<h:outputText value="#{ponto_linhaCursor.ponto.pon_numero}" />
+					</p:column>
+
+
+					<p:column headerText="Próximo Ponto"
+						sortBy="#{ponto_linhaCursor.proximoPonto.ponto.pon_numero}"
+						filterBy="#{ponto_linhaCursor.proximoPonto.ponto.pon_numero}">
+						<h:outputText
+							value="#{ponto_linhaCursor.proximoPonto.ponto.pon_numero}" />
+					</p:column>
+
+
+
+
+
+					<p:column headerText="Opções">
+						<p:commandButton icon="ui-icon-trash"
+							actionListener="#{ponto_LinhaBean.excluir}"
+							update=":mensagem :formListagem:tabela">
+							<p:confirm header="Confirmação"
+								message="Deseja excluir o ponto_linha? " icon="ui-icon-alert" />
+							<f:attribute name="ponto_linhaSelecionado"
+								value="#{ponto_linhaCursor}" />
+						</p:commandButton>
+
+						<p:commandButton icon="ui-icon-pencil"
+							actionListener="#{ponto_LinhaBean.editar}"
+							update=":formListagem:tabela :formCadastro:painel :mensagem"
+							oncomplete="PF('dialogo').show();">
+							<f:attribute name="ponto_linhaSelecionado"
+								value="#{ponto_linhaCursor}" />
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+
+
+					</p:column>
+
+				</p:dataTable>
+
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</p:panel>
+		</h:form>
+
+
+
+		<p:dialog header="Ponto_Linha - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true" closable="false">
+			<h:form id="formCadastro" enctype="multipart/form-data">
+				<h:panelGrid columns="2" id="painel">
+
+
+
+					<p:outputLabel value="Tempo: " for="tempo" />
+					<p:inputText id="tempo" size="10" maxlength="5"
+						value="#{ponto_LinhaBean.ponto_Linha.ponLi_tempo}" required="true"
+						requiredMessage="O campo 'Tempo' é obrigatório."
+						converterMessage="O valor informado no campo 'Tempo' é inválido."
+						validatorMessage="Informe um valor entre 0 e 10000 para o campo 'Tempo'">
+						<f:validateLongRange minimum="0" maximum="10000" />
+					</p:inputText>
+
+
+
+
+					<p:outputLabel value="Ponto: " for="ponto" />
+					<p:selectOneMenu id="ponto" filter="true"
+						value="#{ponto_LinhaBean.ponto_Linha.ponto}"
+						converter="omnifaces.SelectItemsConverter" required="true"
+						requiredMessage="O campo 'Ponto' é obrigatório.">
+						<f:selectItem itemLabel="Selecione um ponto: " />
+						<f:selectItems value="#{ponto_LinhaBean.pontos}" var="pontoCursor"
+							itemValue="#{pontoCursor}" itemLabel="#{pontoCursor.pon_numero}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Próximo ponto: " for="proximoPonto" />
+					<p:selectOneMenu id="proximoPonto" filter="true"
+						value="#{ponto_LinhaBean.ponto_Linha.proximoPonto}"
+						converter="omnifaces.SelectItemsConverter" required="true"
+						requiredMessage="O campo 'Próximo ponto' é obrigatório.">
+						<f:selectItem itemLabel="Selecione um ponto: " />
+						<f:selectItems value="#{ponto_LinhaBean.ponto_Linhas}"
+							var="proximoPontoCursor" itemValue="#{proximoPontoCursor}"
+							itemLabel="#{proximoPontoCursor.ponto.pon_numero} - #{proximoPontoCursor.linha.lin_nome}" />
+					</p:selectOneMenu>
+
+
+
+					<p:outputLabel value="Linha: " for="linha" />
+					<p:selectOneMenu id="linha" filter="true"
+						value="#{ponto_LinhaBean.ponto_Linha.linha}"
+						converter="omnifaces.SelectItemsConverter" required="true"
+						requiredMessage="O campo 'Linha' é obrigatório.">
+						<f:selectItem itemLabel="Selecione uma linha: " />
+						<f:selectItems value="#{ponto_LinhaBean.linhas}" var="linhaCursor"
+							itemValue="#{linhaCursor}" itemLabel="#{linhaCursor.lin_nome}" />
+					</p:selectOneMenu>
+
+
+
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+
+					<p:commandButton value="Salvar"
+						actionListener="#{ponto_LinhaBean.salvar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+
+
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>
+

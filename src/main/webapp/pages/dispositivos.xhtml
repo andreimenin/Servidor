@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; UTF-8" />
+		<title>Dispositivos</title>
+
+	</h:head>
+
+	<p:growl id="mensagem" />
+
+	<ui:define name="conteudo">
+
+		<h:form id="formListagem">
+			<p:panel header="Dispositivos - Listagem">
+
+				<p:dataTable emptyMessage="Nenhum registro encontrado."
+					paginator="true" value="#{dispositivoBean.dispositivos}" var="dispositivoCursor"
+					rows="5" id="tabela">
+
+					<f:facet name="header">
+						<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+							actionListener="#{dispositivoBean.novo}" update=":formCadastro:painel">
+
+							<!-- Tirando o contorno vermelho dos campos após chamar um 'Editar' -->
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+					</f:facet>
+
+					<p:column headerText="Identificação: " sortBy="#{dispositivoCursor.dis_identificacao}"
+						filterBy="#{dispositivoCursor.dis_identificacao}">
+						<h:outputText value="#{dispositivoCursor.dis_identificacao}" />
+					</p:column>
+
+					<p:column headerText="Latitude: "
+						sortBy="#{dispositivoCursor.dis_latitude}"
+						filterBy="#{dispositivoCursor.dis_latitude}">
+						<h:outputText value="#{dispositivoCursor.dis_latitude}" />
+					</p:column>
+
+					<p:column headerText="Longitude: "
+						sortBy="#{dispositivoCursor.dis_longitude}"
+						filterBy="#{dispositivoCursor.dis_longitude}">
+						<h:outputText value="#{dispositivoCursor.dis_longitude}" />
+					</p:column>
+					
+					
+
+					<p:column headerText="Opções">
+						<p:commandButton icon="ui-icon-trash"
+							actionListener="#{dispositivoBean.excluir}"
+							update=":mensagem :formListagem:tabela">
+
+							<p:confirm header="Confirmação"
+								message="Deseja excluir o ponto ?" icon="ui-icon-alert" />
+							<f:attribute name="dispositivoSelecionado" value="#{dispositivoCursor}" />
+						</p:commandButton>
+
+						<p:commandButton icon="ui-icon-pencil"
+							actionListener="#{dispositivoBean.editar}"
+							update=":formCadastro:painel" oncomplete="PF('dialogo').show();">
+
+							<f:attribute name="dispositivoSelecionado" value="#{dispositivoCursor}" />
+
+							<!-- Tirando o contorno vermelho dos campos após chamar um 'Editar' -->
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+					</p:column>
+				</p:dataTable>
+
+				<p:confirmDialog global="true">
+					<p:commandButton type="button" styleClass="ui-confirmdialog-yes"
+						icon="ui-icon-check" value="Sim" />
+					<p:commandButton type="button" styleClass="ui-confirmdialog-no"
+						icon="ui-icon-close" value="Não" />
+				</p:confirmDialog>
+
+
+			</p:panel>
+		</h:form>
+
+
+		<p:dialog header="Pontos - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true">
+
+			<h:form id="formCadastro">
+
+				<h:panelGrid columns="2" id="painel">				
+
+
+					<p:outputLabel value="Latitude: " />
+					<p:inputText size="10" value="#{dispositivoBean.dispositivo.dis_latitude}"
+						required="true" requiredMessage="O campo 'Latitude' é obrigatório" />
+
+
+					<p:outputLabel value="Longitude: " />
+					<p:inputText size="10" value="#{dispositivoBean.dispositivo.dis_longitude}"
+						required="true"
+						requiredMessage="O campo 'Longitude' é obrigatório" />
+
+					<p:outputLabel value="Identificação: " />
+					<p:inputText size="30" maxlength="50"
+						value="#{dispositivoBean.dispositivo.dis_identificacao}" required="true"
+						requiredMessage="O campo 'Identificação' é obrigatório" />
+
+
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						actionListener="#{dispositivoBean.salvar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+	</ui:define>
+
+</ui:composition>

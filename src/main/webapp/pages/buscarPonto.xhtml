@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; UTF-8" />
+		<title>Busca de Pontos</title>
+	</h:head>
+
+
+	
+	<ui:define name="conteudo">
+		<h:form id="formulario">
+			<p:panel header="Busca Pontos">
+				<h:panelGrid columns="3">
+
+					<p:outputLabel value="Número: " />
+					<p:inputText id="numero" size="20" maxlength="13" required="true"
+						requiredMessage="O campo número é obrigatório"
+						value="#{buscaPontoBean.pontoSelecionado.pon_numero}"
+						converterMessage="O valor informado no campo 'Número' é inválido">
+						<p:commandButton icon="ui-icon-search"
+							update=":mensagem :formulario:painelDados"
+							actionListener="#{buscaPontoBean.buscar}">
+						</p:commandButton>
+
+					</p:inputText>
+
+				</h:panelGrid>
+
+				<!-- panelGroup serve como marcador, para exibir e ocultar uma àrea -->
+				<h:panelGroup layout="block" id="painelDados">
+
+					<h:panelGrid columns="2"
+						rendered="#{buscaPontoBean.exibePainelDados}" styleClass="coordenadas">
+
+						<h:outputLabel value="Latitude: " />
+						<h:outputText
+							value="#{buscaPontoBean.pontoSelecionado.pon_latitude}" />
+
+						<h:outputLabel value="Longitude: " />
+						<h:outputText
+							value="#{buscaPontoBean.pontoSelecionado.pon_longitude}" />
+
+
+
+
+
+						<p:outputLabel value="Linhas:" />
+
+						<p:dataTable id="tabela" var="linhaCursor"
+							value="#{buscaPontoBean.linhas}" selectionMode="single"
+							selection="#{buscaPontoBean.linhaSelecionado}"
+							rowKey="#{linhaCursor.codigo}" widgetVar="tabelaLinhas"
+							style="width: 50%">
+							<f:facet name="header">
+
+							</f:facet>
+							<p:column headerText="Linha" style="text-align:center">
+								<h:outputText value="#{linhaCursor.lin_nome}" />
+							</p:column>
+
+							<f:facet name="footer">
+								<p:commandButton process="tabela" icon="ui-icon-search"
+									value="View" oncomplete="PF('linha_dispositivoDialog').show()"
+									update=":formulario:linha_dispositivosDetail"
+									actionListener="#{buscaPontoBean.onRowSelect}" />
+							</f:facet>
+						</p:dataTable>
+
+					</h:panelGrid>
+
+				</h:panelGroup>
+			</p:panel>
+
+			<p:dialog header="Dispositivos"
+				widgetVar="linha_dispositivoDialog" modal="true" showEffect="fade"
+				hideEffect="fade" resizable="false" draggable="false" width="450">
+
+				<p:outputPanel>
+
+					<p:dataTable id="linha_dispositivosDetail"
+						var="linha_dispositivoCursor"
+						value="#{buscaPontoBean.linha_Dispositivos}" 
+						draggable="false" resizable="false" modal="true">
+
+						<p:column headerText="Dispositivo" style="text-align:center">
+							<h:outputText
+								value="#{linha_dispositivoCursor.dispositivo.dis_identificacao}" />
+						</p:column>
+						<p:column headerText="Tempo Final" style="text-align:center">
+							<h:outputText value="#{linha_dispositivoCursor.liDis_tempoFinal}" />
+						</p:column>
+
+					</p:dataTable>
+				</p:outputPanel>
+
+			</p:dialog>
+
+		</h:form>
+	</ui:define>
+
+
+</ui:composition>

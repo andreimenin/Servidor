@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; UTF-8" />
+	<title>Linhas</title>
+
+</h:head>
+
+	<p:growl id="mensagem" />
+
+<ui:define name="conteudo">
+
+	<h:form id="formListagem">
+		<p:panel header="Linhas - Listagem">
+
+			<p:dataTable emptyMessage="Nenhum registro encontrado."
+				paginator="true" value="#{linhaBean.linhas}" var="linhaCursor"
+				rows="5" id="tabela">
+
+				<f:facet name="header">
+					<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+						actionListener="#{linhaBean.novo}" update=":formCadastro:painel">
+
+						<!-- Tirando o contorno vermelho dos campos após chamar um 'Editar' -->
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+
+				</f:facet>
+				
+				
+				<p:column headerText="Nome das linhas: "
+					sortBy="#{linhaCursor.lin_nome}" filterBy="#{linhaCursor.lin_nome}">
+					<h:outputText value="#{linhaCursor.lin_nome}"/>
+				</p:column>
+
+
+				<p:column headerText="Opções">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{linhaBean.excluir}"
+						update=":mensagem :formListagem:tabela">
+
+						<p:confirm header="Confirmação" message="Deseja excluir a linha ?"
+							icon="ui-icon-alert" />
+						<f:attribute name="linhaSelecionado" value="#{linhaCursor}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{linhaBean.editar}" update=":formCadastro:painel"
+						oncomplete="PF('dialogo').show();">
+
+						<f:attribute name="linhaSelecionado" value="#{linhaCursor}" />
+
+						<!-- Tirando o contorno vermelho dos campos após chamar um 'Editar' -->
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog global="true">
+				<p:commandButton type="button" styleClass="ui-confirmdialog-yes"
+					icon="ui-icon-check" value="Sim" />
+				<p:commandButton type="button" styleClass="ui-confirmdialog-no"
+					icon="ui-icon-close" value="Não" />
+			</p:confirmDialog>
+
+
+		</p:panel>
+	</h:form>
+
+
+	<p:dialog header="Linhas - Cadastro" widgetVar="dialogo"
+		draggable="false" resizable="false" modal="true">
+
+		<h:form id="formCadastro">
+
+			<h:panelGrid columns="2" id="painel">
+
+				<p:outputLabel value="Nome da linha: " />
+				<p:inputText size="15" value="#{linhaBean.linha.lin_nome}"
+					required="true"
+					requiredMessage="O campo 'Nome da linha' é obrigatório" />
+
+			</h:panelGrid>
+
+			<h:panelGrid columns="2">
+				<p:commandButton value="Salvar" actionListener="#{linhaBean.salvar}"
+					update=":mensagem :formCadastro:painel :formListagem:tabela" />
+				<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+			</h:panelGrid>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:define>
+
+</ui:composition>

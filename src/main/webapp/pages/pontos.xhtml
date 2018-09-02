@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; UTF-8" />
+		<title>Pontos</title>
+
+	</h:head>
+
+	<p:growl id="mensagem" />
+
+	<ui:define name="conteudo">
+
+		<h:form id="formListagem">
+			<p:panel header="Pontos - Listagem">
+
+				<p:dataTable emptyMessage="Nenhum registro encontrado."
+					paginator="true" value="#{pontoBean.pontos}" var="pontoCursor"
+					rows="5" id="tabela">
+
+					<f:facet name="header">
+						<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+							actionListener="#{pontoBean.novo}" update=":formCadastro:painel">
+
+							<!-- Tirando o contorno vermelho dos campos após chamar um 'Editar' -->
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+					</f:facet>
+
+					<p:column headerText="Número: " sortBy="#{pontoCursor.pon_numero}"
+						filterBy="#{pontoCursor.pon_numero}">
+						<h:outputText value="#{pontoCursor.pon_numero}" />
+					</p:column>
+
+					<p:column headerText="Latitude: "
+						sortBy="#{pontoCursor.pon_latitude}"
+						filterBy="#{pontoCursor.pon_latitude}">
+						<h:outputText value="#{pontoCursor.pon_latitude}" />
+					</p:column>
+
+					<p:column headerText="Longitude: "
+						sortBy="#{pontoCursor.pon_longitude}"
+						filterBy="#{pontoCursor.pon_longitude}">
+						<h:outputText value="#{pontoCursor.pon_longitude}" />
+					</p:column>
+					
+					<p:column headerText="Referência: "
+						sortBy="#{pontoCursor.pon_referencia}"
+						filterBy="#{pontoCursor.pon_referencia}">
+						<h:outputText value="#{pontoCursor.pon_referencia}" />
+					</p:column>
+
+
+
+
+					<p:column headerText="Opções">
+						<p:commandButton icon="ui-icon-trash"
+							actionListener="#{pontoBean.excluir}"
+							update=":mensagem :formListagem:tabela">
+
+							<p:confirm header="Confirmação"
+								message="Deseja excluir o ponto ?" icon="ui-icon-alert" />
+							<f:attribute name="pontoSelecionado" value="#{pontoCursor}" />
+						</p:commandButton>
+
+						<p:commandButton icon="ui-icon-pencil"
+							actionListener="#{pontoBean.editar}"
+							update=":formCadastro:painel" oncomplete="PF('dialogo').show();">
+
+							<f:attribute name="pontoSelecionado" value="#{pontoCursor}" />
+
+							<!-- Tirando o contorno vermelho dos campos após chamar um 'Editar' -->
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+					</p:column>
+				</p:dataTable>
+
+				<p:confirmDialog global="true">
+					<p:commandButton type="button" styleClass="ui-confirmdialog-yes"
+						icon="ui-icon-check" value="Sim" />
+					<p:commandButton type="button" styleClass="ui-confirmdialog-no"
+						icon="ui-icon-close" value="Não" />
+				</p:confirmDialog>
+
+
+			</p:panel>
+		</h:form>
+
+
+		<p:dialog header="Pontos - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true">
+
+			<h:form id="formCadastro">
+
+				<h:panelGrid columns="2" id="painel">
+
+					<p:outputLabel value="Número: " />
+					<p:inputText size="10" value="#{pontoBean.ponto.pon_numero}"
+						required="true" requiredMessage="O campo 'Número' é obrigatório" />
+
+
+					<p:outputLabel value="Latitude: " />
+					<p:inputText size="10" value="#{pontoBean.ponto.pon_latitude}"
+						required="true" requiredMessage="O campo 'Latitude' é obrigatório" />
+
+
+					<p:outputLabel value="Longitude: " />
+					<p:inputText size="10" value="#{pontoBean.ponto.pon_longitude}"
+						required="true"
+						requiredMessage="O campo 'Longitude' é obrigatório" />
+
+					<p:outputLabel value="Referência: " />
+					<p:inputText size="30" maxlength="50"
+						value="#{pontoBean.ponto.pon_referencia}" required="true"
+						requiredMessage="O campo 'Referência' é obrigatório" />
+
+
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						actionListener="#{pontoBean.salvar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+	</ui:define>
+
+</ui:composition>
